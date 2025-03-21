@@ -17,7 +17,6 @@ void insert_at_head(struct linked_list *list, size_t value);
 void insert_at_tail(struct linked_list *list, size_t value);
 size_t remove_from_head(struct linked_list *list);
 size_t remove_from_tail(struct linked_list *list);
-bool exists(struct linked_list list, size_t value);
 
 void dump_list(FILE *fp, struct linked_list list);
 

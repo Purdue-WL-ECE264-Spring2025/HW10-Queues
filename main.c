@@ -1,29 +1,43 @@
 #include "queue.h"
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-void test_serialize_tiles();
-int main() {
+int main(int argc, char **argv) {
+  if (argc < 2) {
+    fprintf(stderr, "Usage: %s [test file]\n", argv[0]);
+    exit(1);
+  }
 
-  struct game_state start = {.tiles = {{0x1, 0x2, 0x3, 0x4},
-                                       {0x5, 0x6, 0x7, 0x8},
-                                       {0x9, 0xa, 0xb, 0xc},
-                                       {0xd, 0xe, 0xf, 0x0}},
-                             .empty_col = 3,
-                             .empty_row = 3,
-                             .num_steps = 0};
+  FILE *fp = fopen(argv[1], "r");
+  if (!fp) {
+    fprintf(stderr, "Failed to open input file %s\n", argv[1]);
+    exit(2);
+  }
 
-  move_down(&start);
-  move_down(&start);
-  move_right(&start);
-  move_right(&start);
-  move_down(&start);
-  move_left(&start);
-  move_up(&start);
-  move_up(&start);
-  move_up(&start);
+  int expected;
+  fscanf(fp, "%d", &expected);
 
+  struct game_state start;
   start.num_steps = 0;
+  for (uint8_t i = 0; i < 4; i++) {
+    for (uint8_t j = 0; j < 4; j++) {
+      int value;
+      fscanf(fp, "%d", &value);
+      start.tiles[i][j] = value;
+      if (value == 0) {
+        start.empty_row = i;
+        start.empty_col = j;
+      }
+    }
+  }
+  fclose(fp);
 
-  printf("Should be zero: %d\n", number_of_moves(start));
+  int output = number_of_moves(start);
+  if (output != expected) {
+    fprintf(stderr, "Expected %d moves, got %d\n", expected, output);
+    exit(3);
+  }
 
   return 0;
 }
